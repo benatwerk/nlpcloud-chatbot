@@ -28,6 +28,12 @@ function App() {
         }
     }, [currentChat]);
 
+    useEffect(() => {
+        if (mainRef.current) {
+            mainRef.current.scrollTo(0, mainRef.current.scrollHeight);
+        }
+    }, [mainRef]);
+
     return (
         <>
             <Loader />

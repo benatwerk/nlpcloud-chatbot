@@ -18,7 +18,7 @@ if (!process.env.NLP_API_KEY || !process.env.NLP_MODEL) {
     );
 }
 
-const tokenLimit = process.env.TOKEN_LIMIT || 2048;
+const TOKEN_LIMIT = process.env.TOKEN_LIMIT || 2048;
 
 /**
  * Creates a new NLPCloudClient instance with the specified model and API key.
@@ -79,7 +79,6 @@ const tokenize = (text) => {
 
     // Check if the input is a string.
     if (typeof text !== "string") {
-        console.error("Invalid text:", text);
         return [];
     }
 
@@ -110,6 +109,90 @@ const trimTokens = (tokens, maxTokens) => {
 
     // Join the remaining tokens into a single string and return it.
     return tokens.join("");
+};
+
+/**
+ * Trims the chat history to a maximum number of tokens.
+ *
+ * @param {Array} chatHistory - The chat history to trim.
+ * @param {number} maxTokens - The maximum number of tokens to allow in the chat history.
+ * @returns {Array} - The trimmed chat history.
+ */
+const trimChatHistory = (chatHistory, maxTokens) => {
+    let totalTokens = 0;
+
+    // Calculate total token count in the chat history
+    for (const message of chatHistory) {
+        totalTokens += tokenize(message.input).length;
+        totalTokens += tokenize(message.response).length;
+    }
+
+    // Remove oldest messages until we are below the token limit
+    while (totalTokens > maxTokens) {
+        const oldestMessage = chatHistory.shift(); // Remove the oldest message
+        if (!oldestMessage) break; // Exit loop if chat history is empty
+
+        // Subtract the tokens of the removed message from the total
+        totalTokens -=
+            tokenize(oldestMessage.input).length +
+            tokenize(oldestMessage.response).length;
+    }
+
+    return chatHistory;
+};
+
+/**
+ * Trims the input, context, and chat history to a maximum number of tokens.
+ *
+ * @param {string} input - The input text to trim.
+ * @param {string} context - The context text to trim.
+ * @param {Array<{input: string, response: string}>} chatHistory - The chat history to trim.
+ * @param {number} maxTokens - The maximum number of tokens to allow.
+ * @returns {{
+ *  trimmedInput: string,
+ *  trimmedContext: string,
+ *  trimmedChatHistory: Array<{input: string, response: string}>,
+ *  maxTokens: number,
+ *  totalTokens: number
+ * }} - An object containing the trimmed input, context, chat history, and token counts.
+ */
+const trimAllContent = (input, context, chatHistory, maxTokens) => {
+    const inputTokens = tokenize(input);
+    const contextTokens = tokenize(context);
+
+    const chatHistoryString = chatHistory
+        .map((item) => `${item.input} ${item.response}`)
+        .join(" ");
+    const historyTokens = tokenize(chatHistoryString);
+
+    let totalTokens =
+        inputTokens.length + historyTokens.length + contextTokens.length;
+
+    if (totalTokens > maxTokens) {
+        // Calculate remaining tokens for chatHistory and context after accounting for input
+        let remainingTokens = maxTokens - inputTokens.length;
+
+        // Trim chatHistory if necessary
+        if (historyTokens.length > remainingTokens) {
+            chatHistory = trimChatHistory(chatHistory, remainingTokens);
+            remainingTokens = 0; // No more tokens left for context
+        } else {
+            remainingTokens -= historyTokens.length; // Update remaining tokens
+        }
+
+        // Trim context if necessary
+        if (contextTokens.length > remainingTokens) {
+            context = trimTokens(contextTokens, remainingTokens);
+        }
+    }
+
+    return {
+        trimmedInput: input,
+        trimmedContext: context,
+        trimmedChatHistory: chatHistory,
+        maxTokens,
+        totalTokens,
+    };
 };
 
 /**
@@ -146,11 +229,11 @@ const callNlpApi = async (input, context, chatHistory) => {
 
         // Return the response data.
         return response.data;
-    } catch (err) {
+    } catch (error) {
         // Log the error details and re-throw the error.
-        console.error(err.response.status);
-        console.error(err.response.data.detail);
-        throw err;
+        console.error("callNlpApi, Data:", error.response.data);
+        console.error("callNlpApi, Status:", error.response.status);
+        throw error;
     }
 };
 
@@ -196,24 +279,17 @@ app.post("/api/chat", async (req, res) => {
     try {
         const timestamp = new Date().toISOString();
 
-        const inputTokens = tokenize(input);
-        const contextTokens = tokenize(context);
+        // There's some ambiguity here about token limits so this is a work in process
+        // Is it total across input, context and history or just input and history or each it's own?
+        // TODO: Figure out how to handle token limits
+        const { trimmedInput, trimmedContext, trimmedChatHistory } =
+            trimAllContent(input, context, chatHistory, TOKEN_LIMIT);
 
-        const chatHistoryString = chatHistory
-            .map((item) => `${item.input} ${item.response}`)
-            .join(" ");
-        const historyTokens = tokenize(chatHistoryString);
-
-        if (inputTokens.length + historyTokens.length > tokenLimit) {
-            const maxHistoryTokens = tokenLimit - inputTokens.length;
-            chatHistory = trimTokens(historyTokens, maxHistoryTokens);
-        }
-
-        if (contextTokens.length > tokenLimit) {
-            context = trimTokens(contextTokens, tokenLimit);
-        }
-
-        const apiResponse = await callNlpApi(input, context, chatHistory);
+        const apiResponse = await callNlpApi(
+            trimmedInput,
+            trimmedContext,
+            trimmedChatHistory
+        );
 
         const botResponse = apiResponse.response;
 
@@ -225,7 +301,17 @@ app.post("/api/chat", async (req, res) => {
 
         res.json({ ...apiResponse, sessionId });
     } catch (error) {
-        console.error(error);
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // We already console.log this in the callNlpApi function
+            // console.log("Headers:", error.response.headers);
+        } else if (error.request) {
+            // The request was made but no response was received
+            console.error("Request:", error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.error("Error:", error.message);
+        }
         res.status(500).json({ error: "An error occurred" });
     }
 });
