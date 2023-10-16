@@ -95,17 +95,17 @@ The server provides an endpoint for updating the context of a chat session. This
 
 The server uses SQLite to store chat sessions, which includes the session ID, timestamp, title, input, context, and chat history. It also provides endpoints for renaming and deleting chat sessions.
 
-![New Chat Screenshot](./screenshots/new-chat.jpg)
 _New Chat screen showing the initial layout_
+![New Chat Screenshot](./screenshots/new-chat.jpg)
 
-![Input Can Grow Screenshot](./screenshots/input-can-grow.jpg)
 _Demonstration of how the input field can grow dynamically_
+![Input Can Grow Screenshot](./screenshots/input-can-grow.jpg)
 
-![Chat with Conan the Barbarian about my react app (setting the context)](./screenshots/conan-chat.jpg)
 _Chatting with Conan the Barbarian (setting the context)_
+![Chat with Conan the Barbarian about my react app (setting the context)](./screenshots/conan-chat.jpg)
 
-![Bad Jokes Screenshot](./screenshots/bad-jokes.jpg)
 _A screen filled with "jokes" but the real joke is on me_
+![Bad Jokes Screenshot](./screenshots/bad-jokes.jpg)
 
 ## References
 
