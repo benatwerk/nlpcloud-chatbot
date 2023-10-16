@@ -8,11 +8,12 @@
 4. [Technologies Used](#technologies-used)
 5. [Getting Started](#getting-started)
 6. [Server-side Functionality](#server-side-functionality)
-7. [References](#references)
-8. [Icons](#icons)
-9. [Test](#test)
-10. [Contributing](#contributing)
-11. [License](#license)
+7. [Screenshots](#screenshots)
+8. [References](#references)
+9. [Icons](#icons)
+10. [Test](#test)
+11. [Contributing](#contributing)
+12. [License](#license)
 
 ## Introduction
 
@@ -71,6 +72,17 @@ cd nplcloud-frontend
 npm install
 ```
 
+## Environment Variables Setup
+
+Before running the application, you'll need to set up some environment variables. Create a `.env` file in the root directory of your project and populate it with the following keys:
+
+```env
+NLP_API_KEY=your_api_key_here
+SERVER_PORT=a_different_port_than_ui
+NLP_MODEL=your_prefered_model_here
+TOKEN_LIMIT=api_token_limit
+```
+
 ## Test
 
 ```bash
@@ -94,6 +106,8 @@ The server provides an endpoint for updating the context of a chat session. This
 ### Database Operations
 
 The server uses SQLite to store chat sessions, which includes the session ID, timestamp, title, input, context, and chat history. It also provides endpoints for renaming and deleting chat sessions.
+
+### Screenshots
 
 _New Chat screen showing the initial layout_
 ![New Chat Screenshot](./screenshots/new-chat.jpg)

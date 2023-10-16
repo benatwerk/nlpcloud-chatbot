@@ -14,8 +14,18 @@ const UserInput: React.FC = () => {
     useEffect(() => {
         const textarea = textareaRef.current;
         if (textarea) {
+            textarea.focus();
+        }
+    }, [loading]);
+
+    useEffect(() => {
+        const textarea = textareaRef.current;
+        if (textarea) {
             textarea.style.height = "auto";
             textarea.style.height = `${textarea.scrollHeight}px`;
+        }
+        if (textarea) {
+            textarea.focus();
         }
     }, [userInput]);
 
