@@ -1,0 +1,31 @@
+/* Box Model Overrides */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Normalize Margins */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ol,
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+/* Normalize Button and Input */
+button,
+input {
+    border: none;
+    outline: none;
+    background: none;
+}

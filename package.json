@@ -1,0 +1,44 @@
+{
+    "name": "nlpcloud-chat",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "start": "npm run dev",
+        "dev": "npm-run-all --parallel server vite",
+        "dev:host": "npm-run-all --parallel server \"vite -- --host\"",
+        "vite": "vite",
+        "server": "node server.js",
+        "build": "tsc && vite build",
+        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "axios": "^1.5.1",
+        "classnames": "^2.3.2",
+        "cors": "^2.8.5",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "nlpcloud": "^1.0.48",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-icons": "^4.11.0",
+        "sqlite3": "^5.1.6",
+        "uuid": "^9.0.1"
+    },
+    "devDependencies": {
+        "@types/react": "^18.2.15",
+        "@types/react-dom": "^18.2.7",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "@vitejs/plugin-react-swc": "^3.3.2",
+        "eslint": "^8.45.0",
+        "eslint-config-airbnb": "^19.0.4",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-react-refresh": "^0.4.3",
+        "npm-run-all": "^4.1.5",
+        "sass": "^1.68.0",
+        "typescript": "^5.0.2",
+        "vite": "^4.4.5"
+    }
+}

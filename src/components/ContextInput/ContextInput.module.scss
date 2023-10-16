@@ -1,0 +1,22 @@
+.inputForm {
+    flex: 1;
+    margin-top: 0.5rem;
+    &.collapsed {
+        .input {
+            display: none;
+        }
+    }
+}
+
+.textarea {
+    max-height: 200px;
+}
+
+.contentCollapsedButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    strong {
+        margin-left: 0.5rem;
+    }
+}

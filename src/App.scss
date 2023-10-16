@@ -1,0 +1,20 @@
+/* google fonts */
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
+
+#root {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.navigation {
+    font-family: "Lexend Deca", sans-serif;
+}
+
+.botText,
+.userText,
+body {
+    font-family: "Open Sans", sans-serif;
+}

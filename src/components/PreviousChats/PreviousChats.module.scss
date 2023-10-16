@@ -1,0 +1,73 @@
+.previousChats {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .chatList {
+        flex-grow: 1;
+    }
+    height: 100vh;
+    background-color: #222;
+    color: white;
+    svg {
+        color: white;
+    }
+    h2 {
+        font-size: 1rem;
+        padding: 0.5rem;
+    }
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 4px;
+}
+
+ul.chatList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+
+    li {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: smaller;
+        &.active,
+        &:hover {
+            color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.1);
+            transition-property: background-color, color;
+            transition-duration: 0.1s;
+            transition-timing-function: ease;
+        }
+        span {
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            em {
+                margin-left: 1rem;
+            }
+        }
+
+        button {
+            background-color: transparent;
+            border: none;
+            margin-left: 5px;
+            svg {
+                color: rgba(255, 255, 255, 0.5);
+            }
+            &:hover {
+                svg {
+                    color: rgba(255, 255, 255, 0.9);
+                }
+            }
+        }
+    }
+}

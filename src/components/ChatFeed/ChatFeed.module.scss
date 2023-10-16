@@ -1,0 +1,26 @@
+.chatFeed {
+    margin-top: 1rem;
+}
+
+.feedItem {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    .message {
+        display: inline-flex;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        margin-right: 1rem;
+    }
+    &.bot {
+        .message {
+            background-color: #eee;
+        }
+    }
+    &.user {
+        .message {
+            border: 2px solid #ddd;
+        }
+    }
+}

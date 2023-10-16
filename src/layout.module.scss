@@ -1,0 +1,55 @@
+$sidebarWidth: 200px;
+$topContentControlHeight: 20px;
+$topContentHeight: 100px;
+$topContentHeightCalc: calc(#{$topContentHeight} - #{$topContentControlHeight});
+$gutterWidth: 20px;
+$slideSpeed: 0.2s;
+
+.toggleSidebarButtonContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+.container {
+    &.hideNav {
+        .sidebar {
+            left: -$sidebarWidth;
+            transition: left$slideSpeed ease-in-out;
+        }
+        .content {
+            margin-left: $gutterWidth;
+            transition: margin-left $slideSpeed ease-in-out;
+        }
+    }
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: $sidebarWidth;
+    transition: left $slideSpeed ease-in-out;
+    z-index: 1;
+}
+
+.content {
+    margin-left: $sidebarWidth;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding-left: $gutterWidth;
+    transition: margin-left $slideSpeed ease-in-out;
+    .top {
+        flex-shrink: 0;
+    }
+    .main {
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+    .bottom {
+        flex-shrink: 0;
+    }
+}
