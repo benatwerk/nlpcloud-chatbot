@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { Chat, CurrentChat, NewSessionResponse } from "@/types/types";
 
-type ChatContextType = {
+export type ChatContextType = {
     sessionId: string | null;
     isNewSession: boolean;
     loading: boolean;
