@@ -83,6 +83,15 @@ NLP_MODEL=your_prefered_model_here
 TOKEN_LIMIT=api_token_limit
 ```
 
+Example:
+
+```env
+NLP_API_KEY=your_api_key_here
+SERVER_PORT=3001
+NLP_MODEL=chatdolphin
+TOKEN_LIMIT=2048
+```
+
 ## Test
 
 ```bash
