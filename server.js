@@ -75,7 +75,7 @@ const db = new sqlite3.Database("./database.db", (err) => {
  */
 const tokenize = (text) => {
     // Define the size of each token.
-    const tokenSize = 4;
+    const tokenSize = 3;
 
     // Check if the input is a string.
     if (typeof text !== "string") {
@@ -157,33 +157,38 @@ const trimChatHistory = (chatHistory, maxTokens) => {
  * }} - An object containing the trimmed input, context, chat history, and token counts.
  */
 const trimAllContent = (input, context, chatHistory, maxTokens) => {
-    const inputTokens = tokenize(input);
-    const contextTokens = tokenize(context);
+    let inputTokens = tokenize(input);
+    let contextTokens = tokenize(context);
 
-    const chatHistoryString = chatHistory
+    let chatHistoryString = chatHistory
         .map((item) => `${item.input} ${item.response}`)
         .join(" ");
-    const historyTokens = tokenize(chatHistoryString);
+    let historyTokens = tokenize(chatHistoryString);
 
     let totalTokens =
         inputTokens.length + historyTokens.length + contextTokens.length;
 
     if (totalTokens > maxTokens) {
-        // Calculate remaining tokens for chatHistory and context after accounting for input
         let remainingTokens = maxTokens - inputTokens.length;
 
-        // Trim chatHistory if necessary
         if (historyTokens.length > remainingTokens) {
             chatHistory = trimChatHistory(chatHistory, remainingTokens);
-            remainingTokens = 0; // No more tokens left for context
+            chatHistoryString = chatHistory
+                .map((item) => `${item.input} ${item.response}`)
+                .join(" ");
+            historyTokens = tokenize(chatHistoryString);
+            remainingTokens = 0;
         } else {
-            remainingTokens -= historyTokens.length; // Update remaining tokens
+            remainingTokens -= historyTokens.length;
         }
 
-        // Trim context if necessary
         if (contextTokens.length > remainingTokens) {
             context = trimTokens(contextTokens, remainingTokens);
+            contextTokens = tokenize(context);
         }
+
+        totalTokens =
+            inputTokens.length + historyTokens.length + contextTokens.length;
     }
 
     return {
@@ -217,10 +222,11 @@ function cleanHistory(arr = []) {
  * @param {string} input - The user's input.
  * @param {Object} context - The context object for the conversation.
  * @param {Object[]} chatHistory - The chat history array.
+ * @param {number} totalTokens - The total number of tokens in the input, context, and chat history.
  * @returns {Promise<Object>} A Promise that resolves to the API response data.
  * @throws {Error} If the API call fails.
  */
-const callNlpApi = async (input, context, chatHistory) => {
+const callNlpApi = async (input, context, chatHistory, totalTokens) => {
     try {
         // Remove unnecessary properties from the chat history
         const cleanedHistory = cleanHistory(chatHistory);
@@ -231,13 +237,14 @@ const callNlpApi = async (input, context, chatHistory) => {
         return response.data;
     } catch (error) {
         // Log the error details and re-throw the error.
-        console.error("callNlpApi, Data:", error.response.data);
-        console.error("callNlpApi, Status:", error.response.status);
+        console.error("Data:", error.response.data);
+        console.error("Status:", error.response.status);
+        // for debugging
+        console.error("Total Tokens sent:", totalTokens, "of max", TOKEN_LIMIT);
         throw error;
     }
 };
 
-// jsdoc comment
 /**
  * Creates a new chat session.
  * @param {string} input - The user's input.
@@ -282,13 +289,18 @@ app.post("/api/chat", async (req, res) => {
         // There's some ambiguity here about token limits so this is a work in process
         // Is it total across input, context and history or just input and history or each it's own?
         // TODO: Figure out how to handle token limits
-        const { trimmedInput, trimmedContext, trimmedChatHistory } =
-            trimAllContent(input, context, chatHistory, TOKEN_LIMIT);
+        const {
+            trimmedInput,
+            trimmedContext,
+            trimmedChatHistory,
+            totalTokens,
+        } = trimAllContent(input, context, chatHistory, TOKEN_LIMIT);
 
         const apiResponse = await callNlpApi(
             trimmedInput,
             trimmedContext,
-            trimmedChatHistory
+            trimmedChatHistory,
+            totalTokens
         );
 
         const botResponse = apiResponse.response;
